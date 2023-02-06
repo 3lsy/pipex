@@ -6,18 +6,39 @@
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/11 18:36:36 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/05 17:25:51 by echavez-         ###   ########.fr        #
+#    Updated: 2023/02/06 11:45:04 by echavez-         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME		=	pipex
+
+#****************** INC *******************#
+# General
+INC			=	./
+
+# Libft
+SUB_MAKE	=	./libft/
+INCFT		=	./libft/
+
+INCLUDE		=	-O3 -I $(INCFT) -I $(INC)
+
+INC_LIB		=	-L$(INCFT) -lft
+
+#DEPEND		=	# dependencies to install
+
+#***************** SRC* *******************#
+
 DIRSRC		=	./
-DIRFT		=	./libft/
-DIROBJ		=	./
-INCLUDE		=	./ -I $(DIRFT)
+
 SRC			=	pipex.c
-SRCFT		=	ft_isalpha.c ft_isdigit.c ft_isalnum.c ft_isascii.c ft_isprint.c ft_strlen.c ft_memset.c ft_bzero.c ft_memcpy.c ft_memmove.c ft_strlcpy.c ft_strlcat.c ft_toupper.c ft_tolower.c ft_strchr.c ft_strrchr.c ft_strncmp.c ft_memchr.c ft_memcmp.c ft_strnstr.c ft_atoi.c ft_calloc.c ft_strdup.c ft_substr.c ft_strjoin.c ft_strtrim.c ft_split.c ft_itoa.c ft_strmapi.c ft_striteri.c ft_putchar_fd.c ft_putstr_fd.c ft_putendl_fd.c ft_putnbr_fd.c ft_putnbr_base.c ft_uputnbr_base.c ft_strchr_pos.c ft_fstrdup.c ft_strjoin_gnl.c ft_get_next_line.c
-OAUX		=	$(SRC:%=$(DIROBJ)%) $(SRCFT:%=$(DIROBJ)%)
+
+SRCS		=	$(SRC)
+
+#***************** DEPS ******************#
+
+DIROBJ		=	./
+
+OAUX		=	$(SRCS:%=$(DIROBJ)%)
 DEPS		=	$(OAUX:.c=.d)
 OBJS		=	$(OAUX:.c=.o)
 
@@ -32,23 +53,29 @@ else
 CFLAGS		=	-Wall -Wextra -Werror
 endif
 
+ifdef VERB
+	ifeq ($(VERB), on)
+CFLAGS		+=	-DM_VERB
+	endif
+endif
+
 CC			=	/usr/bin/clang
 RM			=	/bin/rm -f
 ECHO		=	/bin/echo -e
 BOLD		=	"\e[1m"
-GREEN		=	"\e[92m"
-BLUE		=	"\e[34m"
-E0M			=	"\e[0m"
+BLUE		=	 "\e[34m"
+GREEN		=	 "\e[92m"
+E0M			=	 "\e[0m"
 
-%.o		:		../$(DIRFT)/%.c
-				@printf $(GREEN)"Compiling ft_printf object files %-33.33s\r" $@
-				@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
+#************************ DEPS COMPILATION *************************
 
-%.o		:		../$(DIRSRC)/%.c
-				@printf $(GREEN)"Compiling ft_printf object files %-33.33s\r" $@
-				@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
+%.o				:	../$(DIRSRC)/%.c
+					@printf $(GREEN)"Generating project objects... %-33.33s\r" $@
+					@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
 
-$(NAME)	:		$(OBJS)
+#************************ MAIN COMPILATION *************************
+
+$(NAME)	:		ftlib $(OBJS)
 				@printf $(E0M)"\n"
 				@$(ECHO) $(BOLD) $(BLUE)
 				@$(ECHO) '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⣀⠀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀'
@@ -76,22 +103,26 @@ $(NAME)	:		$(OBJS)
 				@$(ECHO) '⠐⠺⠿⠿⠿⠿⠟⠛⠋⠁⠀⠀⠀⠀⠐⠛⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀'
 				@$(ECHO) $(E0M)
 
-				@ar rc $(NAME) $(OBJS)
-				@ranlib $(NAME)
 				@$(ECHO) '> Compiled'
+				@$(CC) $(CFLAGS) $(INCLUDE) -o $(NAME) $(OBJS) $(INC_LIB)
 
 clean	:
 				@($(RM) $(OBJS))
 				@($(RM) $(DEPS))
+				@(cd $(SUB_MAKE) && $(MAKE) clean)
 				@$(ECHO) '> Directory cleaned'
 
 all		:		$(NAME)
 
 fclean	:		clean
+				@(cd $(SUB_MAKE) && $(MAKE) fclean)
 				@$(RM) $(NAME)
 				@$(ECHO) '> Remove executable'
 
 re		:		fclean all
+
+ftlib	:
+				@(cd $(SUB_MAKE) && $(MAKE))
 
 .PHONY	:		all clean fclean re
 

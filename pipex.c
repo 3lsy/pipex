@@ -6,7 +6,7 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 11:36:54 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/05 19:48:08 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/06 12:26:10 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,42 +30,43 @@ char	*get_path(char *cmd, char **envp)
 	i = 0;
 	while (vpath && vpath[i])
 	{
-		tmpath = ft_strjoin(vpath[i++], '/');
+		tmpath = ft_strjoin(vpath[i++], "/");
 		path = ft_strjoin(tmpath, cmd);
 		free(tmpath);
 		if (access(path, F_OK) == 0)
 			return (path);
 		free(path);
 	}
-	ft_free_split(vpath);
+	ft_free_split(&vpath);
 	return (NULL);
 }
 
-void	execution(char *argv, char **envp)
+void	execution(char *args, char **envp)
 {
 	char	*path;
-	char	**cmd;
+	char	**argv;
 
-	cmd = ft_split(argv, ' ');
-	if (cmd == NULL || cmd[0] == NULL)
+	argv = ft_split(args, ' ');
+	if (argv == NULL || argv[0] == NULL)
 	{
-		ft_free_split(cmd);
+		ft_free_split(&argv);
 		ft_putstr_fd("Command not found ''\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	path = get_path(cmd[0], envp);
+	path = get_path(argv[0], envp);
 	if (path == NULL)
 	{
+		ft_free_split(&argv);
 		ft_putstr_fd("Command not found in path\n", 2);
 		exit(EXIT_FAILURE);
 	}
 	if (execve(path, argv, envp) < 0)
 	{
-		ft_free_split(cmd);
-		perror("Error: ");
+		ft_free_split(&argv);
+		perror("Execution error");
 		exit(EXIT_FAILURE);
 	}
-	ft_free_split(cmd);
+	ft_free_split(&argv);
 }
 
 void	child_process(char **argv, int *fd, char **envp)
@@ -75,7 +76,7 @@ void	child_process(char **argv, int *fd, char **envp)
 	infile = open(argv[1], O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (infile < 0)
 	{
-		perror("Error: ");
+		perror("Could not open file");
 		exit(EXIT_FAILURE);
 	}
 	dup2(infile, STDIN_FILENO);
@@ -86,12 +87,12 @@ void	child_process(char **argv, int *fd, char **envp)
 
 void	parent_process(char **argv, int *fd, char **envp)
 {
-	int fileout;
+	int	outfile;
 
 	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (outfile < 0)
 	{
-		perror("Error: ");
+		perror("Could not open file");
 		exit(EXIT_FAILURE);
 	}
 	dup2(fd[0], STDIN_FILENO);
@@ -109,13 +110,13 @@ int	main(int argc, char **argv, char **envp)
 	{
 		if (pipe(fd) < 0)
 		{
-			perror("Error: ");
+			perror("Error on pipe");
 			exit(EXIT_FAILURE);
 		}
 		cpid = fork();
 		if (cpid < 0)
 		{
-			perror("Error: ");
+			perror("Error on fork");
 			exit(EXIT_FAILURE);
 		}
 		if (cpid == 0)
