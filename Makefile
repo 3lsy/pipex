@@ -6,7 +6,7 @@
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/11 18:36:36 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/06 11:45:04 by echavez-         ###   ########.fr        #
+#    Updated: 2023/02/06 21:57:58 by echavez-         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -36,7 +36,7 @@ SRCS		=	$(SRC)
 
 #***************** DEPS ******************#
 
-DIROBJ		=	./
+DIROBJ		=	./depo/
 
 OAUX		=	$(SRCS:%=$(DIROBJ)%)
 DEPS		=	$(OAUX:.c=.d)
@@ -75,7 +75,7 @@ E0M			=	 "\e[0m"
 
 #************************ MAIN COMPILATION *************************
 
-$(NAME)	:		ftlib $(OBJS)
+$(NAME)	:		mkdepo ftlib $(OBJS)
 				@printf $(E0M)"\n"
 				@$(ECHO) $(BOLD) $(BLUE)
 				@$(ECHO) '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⣀⠀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀'
@@ -123,6 +123,9 @@ re		:		fclean all
 
 ftlib	:
 				@(cd $(SUB_MAKE) && $(MAKE))
+
+mkdepo	:
+				@mkdir -p $(DIROBJ)
 
 .PHONY	:		all clean fclean re
 
