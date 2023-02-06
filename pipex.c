@@ -6,7 +6,7 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 11:36:54 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/06 21:33:36 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/06 21:51:02 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	execution(char *args, char **envp)
 
 void	child_process(char **argv, int *fd, char **envp)
 {
-	int infile;
+	int	infile;
 
 	infile = open(argv[1], O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO);
 	if (infile < 0)
@@ -89,7 +89,8 @@ void	parent_process(char **argv, int *fd, char **envp)
 {
 	int	outfile;
 
-	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU | S_IRWXG | S_IRWXO);
+	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC,
+			S_IRWXU | S_IRWXG | S_IRWXO);
 	if (outfile < 0)
 	{
 		perror("Could not open file");
