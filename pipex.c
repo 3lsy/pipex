@@ -6,7 +6,7 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 11:36:54 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/06 12:26:10 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/06 21:33:36 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,20 +51,20 @@ void	execution(char *args, char **envp)
 	{
 		ft_free_split(&argv);
 		ft_putstr_fd("Command not found ''\n", 2);
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE * 127);
 	}
 	path = get_path(argv[0], envp);
 	if (path == NULL)
 	{
 		ft_free_split(&argv);
 		ft_putstr_fd("Command not found in path\n", 2);
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE * 127);
 	}
 	if (execve(path, argv, envp) < 0)
 	{
 		ft_free_split(&argv);
 		perror("Execution error");
-		exit(EXIT_FAILURE);
+		exit(EXIT_FAILURE * 127);
 	}
 	ft_free_split(&argv);
 }
@@ -124,5 +124,7 @@ int	main(int argc, char **argv, char **envp)
 		waitpid(cpid, NULL, 0);
 		parent_process(argv, fd, envp);
 	}
-	return (0);
+	else
+		return (EXIT_FAILURE);
+	return (EXIT_SUCCESS);
 }
