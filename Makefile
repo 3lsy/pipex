@@ -6,38 +6,20 @@
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/11 18:36:36 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/06 21:57:58 by echavez-         ###   ########.fr        #
+#    Updated: 2023/02/07 10:08:27 by echavez-         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
 NAME		=	pipex
-
-#****************** INC *******************#
-# General
 INC			=	./
-
-# Libft
 SUB_MAKE	=	./libft/
 INCFT		=	./libft/
-
 INCLUDE		=	-O3 -I $(INCFT) -I $(INC)
-
 INC_LIB		=	-L$(INCFT) -lft
-
-#DEPEND		=	# dependencies to install
-
-#***************** SRC* *******************#
-
 DIRSRC		=	./
-
 SRC			=	pipex.c
-
 SRCS		=	$(SRC)
-
-#***************** DEPS ******************#
-
 DIROBJ		=	./depo/
-
 OAUX		=	$(SRCS:%=$(DIROBJ)%)
 DEPS		=	$(OAUX:.c=.d)
 OBJS		=	$(OAUX:.c=.o)
@@ -67,13 +49,9 @@ BLUE		=	 "\e[34m"
 GREEN		=	 "\e[92m"
 E0M			=	 "\e[0m"
 
-#************************ DEPS COMPILATION *************************
-
 %.o				:	../$(DIRSRC)/%.c
 					@printf $(GREEN)"Generating project objects... %-33.33s\r" $@
 					@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
-
-#************************ MAIN COMPILATION *************************
 
 $(NAME)	:		mkdepo ftlib $(OBJS)
 				@printf $(E0M)"\n"
