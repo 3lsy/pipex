@@ -6,15 +6,14 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 11:36:54 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/06 21:51:02 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/11 19:30:28 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-char	*get_path(char *cmd, char **envp)
+char	*get_path(char *cmd, char **envp, char *path)
 {
-	char	*path;
 	char	**vpath;
 	int		i;
 	char	*tmpath;
@@ -23,9 +22,7 @@ char	*get_path(char *cmd, char **envp)
 	while (envp[i] && ft_strnstr(envp[i], "PATH=", 5) == 0)
 		i++;
 	if (envp[i] == NULL)
-		ft_putstr_fd("Please set your path before running this program\n", 2);
-	if (envp[i] == NULL)
-		exit(EXIT_FAILURE);
+		return (NULL);
 	vpath = ft_split(&envp[i][5], ':');
 	i = 0;
 	while (vpath && vpath[i])
@@ -34,38 +31,39 @@ char	*get_path(char *cmd, char **envp)
 		path = ft_strjoin(tmpath, cmd);
 		free(tmpath);
 		if (access(path, F_OK) == 0)
+		{
+			ft_free_split(&vpath);
 			return (path);
+		}
 		free(path);
 	}
 	ft_free_split(&vpath);
 	return (NULL);
 }
 
-void	execution(char *args, char **envp)
+void	execution(char *args, char **envp, char *path)
 {
-	char	*path;
 	char	**argv;
 
-	argv = ft_split(args, ' ');
+	argv = ft_split_args(args);
 	if (argv == NULL || argv[0] == NULL)
 	{
 		ft_free_split(&argv);
-		ft_putstr_fd("Command not found ''\n", 2);
+		ft_puterror("pipex: line 1", "", "command not found");
 		exit(EXIT_FAILURE * 127);
 	}
-	path = get_path(argv[0], envp);
-	if (path == NULL)
+	if (!ft_strchr(argv[0], '/'))
+		path = get_path(argv[0], envp, NULL);
+	else
+		path = ft_strdup(argv[0]);
+	if (path == NULL || execve(path, argv, envp) < 0)
 	{
+		free(path);
+		ft_puterror("pipex: line 1", argv[0], "command not found");
 		ft_free_split(&argv);
-		ft_putstr_fd("Command not found in path\n", 2);
 		exit(EXIT_FAILURE * 127);
 	}
-	if (execve(path, argv, envp) < 0)
-	{
-		ft_free_split(&argv);
-		perror("Execution error");
-		exit(EXIT_FAILURE * 127);
-	}
+	free(path);
 	ft_free_split(&argv);
 }
 
@@ -73,33 +71,32 @@ void	child_process(char **argv, int *fd, char **envp)
 {
 	int	infile;
 
-	infile = open(argv[1], O_RDONLY, S_IRWXU | S_IRWXG | S_IRWXO);
+	infile = open(argv[1], O_RDONLY);
 	if (infile < 0)
 	{
-		perror("Could not open file");
+		ft_puterror("pipex: line 1", argv[1], strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	dup2(infile, STDIN_FILENO);
 	dup2(fd[1], STDOUT_FILENO);
 	close(fd[0]);
-	execution(argv[2], envp);
+	execution(argv[2], envp, NULL);
 }
 
 void	parent_process(char **argv, int *fd, char **envp)
 {
 	int	outfile;
 
-	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC,
-			S_IRWXU | S_IRWXG | S_IRWXO);
+	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (outfile < 0)
 	{
-		perror("Could not open file");
+		ft_puterror("pipex: line 1", argv[1], strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	dup2(fd[0], STDIN_FILENO);
 	dup2(outfile, STDOUT_FILENO);
 	close(fd[1]);
-	execution(argv[3], envp);
+	execution(argv[3], envp, NULL);
 }
 
 int	main(int argc, char **argv, char **envp)
@@ -122,7 +119,6 @@ int	main(int argc, char **argv, char **envp)
 		}
 		if (cpid == 0)
 			child_process(argv, fd, envp);
-		waitpid(cpid, NULL, 0);
 		parent_process(argv, fd, envp);
 	}
 	else
