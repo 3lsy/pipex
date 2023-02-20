@@ -6,9 +6,14 @@
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/11 18:36:36 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/07 10:08:27 by echavez-         ###   ########.fr        #
+#    Updated: 2023/02/20 09:26:12 by marvin           ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
+
+.ONESHELL:
+
+$(info Creating directory...)
+$(shell mkdir -p ./depo/)
 
 NAME		=	pipex
 INC			=	./
@@ -53,7 +58,7 @@ E0M			=	 "\e[0m"
 					@printf $(GREEN)"Generating project objects... %-33.33s\r" $@
 					@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
 
-$(NAME)	:		mkdepo ftlib $(OBJS)
+$(NAME)	:		ftlib $(OBJS)
 				@printf $(E0M)"\n"
 				@$(ECHO) $(BOLD) $(BLUE)
 				@$(ECHO) '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⣀⠀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀'
