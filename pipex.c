@@ -6,7 +6,7 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 11:36:54 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/11 19:30:28 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/22 23:13:45 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,15 @@ char	*get_path(char *cmd, char **envp, char *path)
 	while (vpath && vpath[i])
 	{
 		tmpath = ft_strjoin(vpath[i++], "/");
+		if (!tmpath)
+			return (ft_free_split(&vpath));
 		path = ft_strjoin(tmpath, cmd);
-		free(tmpath);
-		if (access(path, F_OK) == 0)
-		{
-			ft_free_split(&vpath);
+		ft_freejoin(&tmpath);
+		if (path && access(path, F_OK) == 0 && ft_free_split(&vpath) == NULL)
 			return (path);
-		}
-		free(path);
+		ft_freejoin(&path);
 	}
-	ft_free_split(&vpath);
-	return (NULL);
+	return (ft_free_split(&vpath));
 }
 
 void	execution(char *args, char **envp, char *path)
@@ -90,7 +88,7 @@ void	parent_process(char **argv, int *fd, char **envp)
 	outfile = open(argv[4], O_WRONLY | O_CREAT | O_TRUNC, 0664);
 	if (outfile < 0)
 	{
-		ft_puterror("pipex: line 1", argv[1], strerror(errno));
+		ft_puterror("pipex: line 1", argv[4], strerror(errno));
 		exit(EXIT_FAILURE);
 	}
 	dup2(fd[0], STDIN_FILENO);
