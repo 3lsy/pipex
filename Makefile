@@ -5,29 +5,46 @@
 #                                                     +:+ +:+         +:+      #
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/11/11 18:36:36 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/23 00:00:36 by echavez-         ###   ########.fr        #
+#    Created: 2023/02/25 01:03:41 by echavez-          #+#    #+#              #
+#    Updated: 2023/02/25 01:26:45 by echavez-         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
+
+NAME		=	pipex
+
+#****************** INC *******************#
+# General
+INC			=	./
+
+# Lib
+LIB			=	./libft/					# libft library
+LIBINC		=	$(LIB)
+
+INC_LIB		=	-L$(LIBINC) -lft			# Include library
+
+INCLUDE		=	-O3 -I $(INC) -I $(LIBINC)	# Header files
+
+#***************** SRC ********************#
+
+DIRSRC		=	./
+
+SRC			=	pipex.c
+
+SRCS		=	$(SRC)
+
+#***************** DEPS ******************#
+
+DIROBJ		=	./depo/
+
+OAUX		=	$(SRCS:%=$(DIROBJ)%)
+DEPS		=	$(OAUX:.c=.d)
+OBJS		=	$(OAUX:.c=.o)
 
 .ONESHELL:
 
 $(info Creating directory...)
-$(shell mkdir -p ./depo/)
+$(shell mkdir -p $(DIROBJ))
 
-NAME		=	pipex
-INC			=	./
-SUB_MAKE	=	./libft/
-INCFT		=	./libft/
-INCLUDE		=	-O3 -I $(INCFT) -I $(INC)
-INC_LIB		=	-L$(INCFT) -lft
-DIRSRC		=	./
-SRC			=	pipex.c
-SRCS		=	$(SRC)
-DIROBJ		=	./depo/
-OAUX		=	$(SRCS:%=$(DIROBJ)%)
-DEPS		=	$(OAUX:.c=.d)
-OBJS		=	$(OAUX:.c=.o)
 
 ifdef FLAGS
 	ifeq ($(FLAGS), no)
@@ -40,25 +57,33 @@ else
 CFLAGS		=	-Wall -Wextra -Werror
 endif
 
-ifdef VERB
-	ifeq ($(VERB), on)
-CFLAGS		+=	-DM_VERB
-	endif
+ifndef VERBOSE
+.SILENT:
 endif
 
-CC			=	/usr/bin/clang
-RM			=	/bin/rm -f
-ECHO		=	/bin/echo -e
+ENV			=	/usr/bin/env
+CC			=	$(ENV) clang
+RM			=	$(ENV) rm -f
+GIT			=	$(ENV) git
+ECHO		=	$(ENV) echo -e
 BOLD		=	"\e[1m"
-BLUE		=	 "\e[34m"
+BLINK		=	 "\e[5m"
+RED			=	 "\e[38;2;255;0;0m"
 GREEN		=	 "\e[92m"
+BLUE		=	 "\e[34m"
+YELLOW		=	 "\e[33m"
 E0M			=	 "\e[0m"
 
-%.o				:	../$(DIRSRC)/%.c
-					@printf $(GREEN)"Generating project objects... %-33.33s\r" $@
-					@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
+#************************ DEPS COMPILATION *************************
 
-$(NAME)	:		ftlib $(OBJS)
+%.o			:	../$(DIRSRC)/%.c
+				@printf $(GREEN)"Generating ${NAME} objects... %-33.33s\r"$(E0M) $@
+				@$(CC) $(CFLAGS) $(INCLUDE) -MMD -o $@ -c $<
+
+#************************ MAIN COMPILATION *************************
+
+$(NAME)		:	ftlib $(OBJS)
+				@$(CC)  $(INCLUDE) $(CFLAGS) -o $(NAME) $(OBJS) $(INC_LIB)
 				@printf $(E0M)"\n"
 				@$(ECHO) $(BOLD) $(BLUE)
 				@$(ECHO) '⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⠀⣀⠀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀'
@@ -86,30 +111,34 @@ $(NAME)	:		ftlib $(OBJS)
 				@$(ECHO) '⠐⠺⠿⠿⠿⠿⠟⠛⠋⠁⠀⠀⠀⠀⠐⠛⠛⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀'
 				@$(ECHO) $(E0M)
 
-				@$(ECHO) '> Compiled'
-				@$(CC) $(CFLAGS) $(INCLUDE) -o $(NAME) $(OBJS) $(INC_LIB)
+				@$(ECHO) $(BOLD)$(GREEN)'> '$(NAME)' Compiled'$(E0M)
 
-clean	:
+clean		:
 				@($(RM) $(OBJS))
 				@($(RM) $(DEPS))
-				@(cd $(SUB_MAKE) && $(MAKE) clean)
-				@$(ECHO) '> Directory cleaned'
+				@($(RM) $(DIROBJ))
+				@(cd $(LIB) && $(MAKE) clean)
+				@$(ECHO) $(BOLD)$(RED)'> '$(NAME)' directory        cleaned'$(E0M)
 
-all		:		$(NAME)
+all			:	$(NAME)
 
-fclean	:		clean
-				@(cd $(SUB_MAKE) && $(MAKE) fclean)
-				@$(RM) $(NAME)
-				@$(ECHO) '> Remove executable'
+fclean		:
+				@($(RM) $(OBJS))
+				@($(RM) $(DEPS))
+				@($(RM) $(NAME))
+				@(cd $(LIB) && $(MAKE) fclean)
+				@$(ECHO) $(BOLD)$(RED)'> '$(NAME)' directory        cleaned'$(E0M)
+				@$(ECHO) $(BOLD)$(RED)'> Executable             removed'$(E0M)
 
-re		:		fclean all
+re			:	fclean all
 
-ftlib	:
-				@(cd $(SUB_MAKE) && $(MAKE))
+ftlib		:
+				@(cd $(LIB) && $(MAKE))
 
-mkdepo	:
-				@mkdir -p $(DIROBJ)
+init		:
+				@$(GIT) submodule init
+				@$(GIT) submodule update
 
-.PHONY	:		all clean fclean re
+.PHONY		:	all clean fclean re ftlib init
 
 -include $(DEPS)
