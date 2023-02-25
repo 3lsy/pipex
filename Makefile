@@ -6,7 +6,7 @@
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/25 01:03:41 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/25 01:26:45 by echavez-         ###   ########.fr        #
+#    Updated: 2023/02/25 01:30:03 by echavez-         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -63,7 +63,7 @@ endif
 
 ENV			=	/usr/bin/env
 CC			=	$(ENV) clang
-RM			=	$(ENV) rm -f
+RM			=	$(ENV) rm -rf
 GIT			=	$(ENV) git
 ECHO		=	$(ENV) echo -e
 BOLD		=	"\e[1m"
