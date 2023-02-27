@@ -6,7 +6,7 @@
 #    By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/02/25 01:03:41 by echavez-          #+#    #+#              #
-#    Updated: 2023/02/25 01:30:03 by echavez-         ###   ########.fr        #
+#    Updated: 2023/02/27 22:43:00 by echavez-         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -28,7 +28,7 @@ INCLUDE		=	-O3 -I $(INC) -I $(LIBINC)	# Header files
 
 DIRSRC		=	./
 
-SRC			=	pipex.c
+SRC			=	pipex.c exe.c
 
 SRCS		=	$(SRC)
 
