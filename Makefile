@@ -64,7 +64,6 @@ endif
 ENV			=	/usr/bin/env
 CC			=	$(ENV) clang
 RM			=	$(ENV) rm -rf
-GIT			=	$(ENV) git
 ECHO		=	$(ENV) echo -e
 BOLD		=	"\e[1m"
 BLINK		=	 "\e[5m"
@@ -122,23 +121,19 @@ clean		:
 
 all			:	$(NAME)
 
-fclean		:
-				@($(RM) $(OBJS))
-				@($(RM) $(DEPS))
+fclean		:		clean
 				@($(RM) $(NAME))
 				@(cd $(LIB) && $(MAKE) fclean)
-				@$(ECHO) $(BOLD)$(RED)'> '$(NAME)' directory        cleaned'$(E0M)
 				@$(ECHO) $(BOLD)$(RED)'> Executable             removed'$(E0M)
 
-re			:	fclean all
+re			:	fclean mkdepo all
+
+mkdepo		:
+				mkdir -p $(DIROBJ)
 
 ftlib		:
 				@(cd $(LIB) && $(MAKE))
 
-init		:
-				@$(GIT) submodule init
-				@$(GIT) submodule update
-
-.PHONY		:	all clean fclean re ftlib init
+.PHONY		:	all clean fclean re ftlib mkdepo
 
 -include $(DEPS)
