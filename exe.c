@@ -6,7 +6,7 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/27 22:42:50 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/28 14:58:48 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/28 15:10:41 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ static void	exec_path(char *path, char **argv, char **envp, pid_t cpid)
 {
 	if (path == NULL || execve(path, argv, envp) < 0)
 	{
-		ft_freejoin(path);
+		ft_freejoin(&path);
 		exit_error(cpid, &argv, argv[0], "command not found");
 	}
-	ft_freejoin(path);
+	ft_freejoin(&path);
 	ft_free_split(&argv);
 }
 

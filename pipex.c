@@ -6,7 +6,7 @@
 /*   By: echavez- <echavez-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/31 11:36:54 by echavez-          #+#    #+#             */
-/*   Updated: 2023/02/28 00:01:21 by echavez-         ###   ########.fr       */
+/*   Updated: 2023/02/28 15:16:59 by echavez-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,9 @@ void	exit_error(pid_t cpid, char ***argv, char *arg, char *strerr)
 	ft_puterror("pipex: line 1", arg, strerr);
 	if (argv)
 		ft_free_split(argv);
-	exit(EXIT_FAILURE * 127);
+	if (argv)
+		exit(EXIT_FAILURE * 127);
+	exit(EXIT_FAILURE);
 }
 
 void	child_process(char **argv, int *fd, char **envp, pid_t cpid)
